@@ -75,7 +75,7 @@ router.get('/cart', (req, res) => {
 // Checkout page
 router.get('/checkout', (req, res) => {
   res.render('checkout', { 
-    razorpayKeyId: process.env.RAZORPAY_KEY_ID,
+    razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
     page: 'checkout'
   });
 });
@@ -84,10 +84,15 @@ router.get('/checkout', (req, res) => {
 router.post('/create-order', async (req, res) => {
   try {
     const Razorpay = require('razorpay');
-    const razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET
-    });
+    let razorpay = null;
+    if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+      razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET
+      });
+    } else {
+      console.log("⚠️ Razorpay keys missing. Payment features will be disabled (WhatsApp ordering only).");
+    }
 
     const { amount, customerInfo, items } = req.body;
 
