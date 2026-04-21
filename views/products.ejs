@@ -1,0 +1,106 @@
+<%- include('partials/header') %>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="container">
+      <h1>Our Collections</h1>
+      <p>Discover the finest handwoven sarees from Salem</p>
+    </div>
+  </section>
+
+  <!-- Products Section -->
+  <section class="products-section section">
+    <div class="container">
+      <!-- Filters -->
+      <div class="products-toolbar" id="products-toolbar">
+        <div class="filter-tabs">
+          <a href="/products" class="filter-tab <%= currentCategory === 'all' ? 'active' : '' %>" id="filter-all">All</a>
+          <% categories.forEach(function(cat) { %>
+            <a href="/products?category=<%= encodeURIComponent(cat) %>" 
+               class="filter-tab <%= currentCategory === cat ? 'active' : '' %>"
+               id="filter-<%= cat.toLowerCase().replace(/\s+/g, '-') %>"><%= cat %></a>
+          <% }); %>
+        </div>
+        <div class="toolbar-right">
+          <form class="search-form" action="/products" method="GET" id="product-search-form">
+            <% if (currentCategory !== 'all') { %>
+              <input type="hidden" name="category" value="<%= currentCategory %>">
+            <% } %>
+            <div class="search-input-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" name="search" placeholder="Search sarees..." value="<%= search %>" id="search-input">
+            </div>
+          </form>
+          <select class="sort-select" id="sort-select" onchange="sortProducts(this.value)">
+            <option value="default" <%= currentSort === 'default' ? 'selected' : '' %>>Featured</option>
+            <option value="price-low" <%= currentSort === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
+            <option value="price-high" <%= currentSort === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
+            <option value="newest" <%= currentSort === 'newest' ? 'selected' : '' %>>Newest First</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Results count -->
+      <p class="results-count"><%= products.length %> saree<%= products.length !== 1 ? 's' : '' %> found
+        <% if (currentCategory !== 'all') { %> in <strong><%= currentCategory %></strong><% } %>
+        <% if (search) { %> matching "<strong><%= search %></strong>"<% } %>
+      </p>
+
+      <!-- Products Grid -->
+      <% if (products.length > 0) { %>
+        <div class="products-grid">
+          <% products.forEach(function(product) { %>
+            <div class="product-card" id="product-card-<%= product.id %>">
+              <a href="/products/<%= product.id %>" class="product-image-link">
+                <div class="product-image">
+                  <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" loading="lazy"
+                       onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 500%22><rect fill=%22%23f3e8d9%22 width=%22400%22 height=%22500%22/><text x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 fill=%22%238B1A1A%22 font-size=%2248%22>🪷</text><text x=%2250%%22 y=%2265%%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2214%22>Geetha Tex</text></svg>'">
+                  <% if (product.original_price) { %>
+                    <span class="product-badge">-<%= Math.round((1 - product.price/product.original_price) * 100) %>%</span>
+                  <% } %>
+                  <div class="product-overlay">
+                    <button class="btn-icon" onclick="event.preventDefault(); addToCart(<%= product.id %>)" title="Add to Cart">
+                      <i class="fas fa-shopping-bag"></i>
+                    </button>
+                    <a href="/products/<%= product.id %>" class="btn-icon" title="View Details">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                  </div>
+                </div>
+              </a>
+              <div class="product-info">
+                <span class="product-category"><%= product.category %></span>
+                <h3 class="product-name"><a href="/products/<%= product.id %>"><%= product.name %></a></h3>
+                <div class="product-price">
+                  <span class="current-price">₹<%= product.price.toLocaleString('en-IN') %></span>
+                  <% if (product.original_price) { %>
+                    <span class="original-price">₹<%= product.original_price.toLocaleString('en-IN') %></span>
+                  <% } %>
+                </div>
+                <button class="btn btn-sm btn-add-cart" onclick="addToCart(<%= product.id %>)" id="add-cart-<%= product.id %>">
+                  <i class="fas fa-shopping-bag"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <i class="fas fa-search" style="font-size: 3rem; color: var(--accent-gold);"></i>
+          <h3>No sarees found</h3>
+          <p>Try a different search or browse all collections</p>
+          <a href="/products" class="btn btn-primary">View All</a>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <script>
+    function sortProducts(value) {
+      const url = new URL(window.location);
+      url.searchParams.set('sort', value);
+      window.location = url;
+    }
+  </script>
+
+<%- include('partials/footer') %>

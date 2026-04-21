@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Product — Geetha Tex Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <%- include('partials/sidebar', { page: 'admin-edit' }) %>
+
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1>Edit Product</h1>
+      </div>
+
+      <% if (error) { %>
+        <div class="alert alert-error">
+          <i class="fas fa-exclamation-circle"></i> <%= error %>
+        </div>
+      <% } %>
+
+      <div class="admin-form-container">
+        <form action="/admin/edit-product/<%= product.id %>" method="POST" enctype="multipart/form-data" class="admin-form" id="edit-product-form">
+          <div class="form-grid">
+            <div class="form-left">
+              <div class="form-group">
+                <label for="product-name">Product Name *</label>
+                <input type="text" id="product-name" name="name" required value="<%= product.name %>">
+              </div>
+
+              <div class="form-group">
+                <label for="product-desc">Description *</label>
+                <textarea id="product-desc" name="description" rows="5" required><%= product.description %></textarea>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="product-price">Selling Price (₹) *</label>
+                  <input type="number" id="product-price" name="price" required min="1" step="0.01" value="<%= product.price %>">
+                </div>
+                <div class="form-group">
+                  <label for="product-original-price">Original Price (₹)</label>
+                  <input type="number" id="product-original-price" name="original_price" min="0" step="0.01" value="<%= product.original_price || '' %>">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="product-category">Category *</label>
+                  <select id="product-category" name="category" required>
+                    <option value="Soft Silk" <%= product.category === 'Soft Silk' ? 'selected' : '' %>>Soft Silk</option>
+                    <option value="Kerala Sarees" <%= product.category === 'Kerala Sarees' ? 'selected' : '' %>>Kerala Sarees</option>
+                    <option value="Wedding Collection" <%= product.category === 'Wedding Collection' ? 'selected' : '' %>>Wedding Collection</option>
+                    <option value="Festive Collection" <%= product.category === 'Festive Collection' ? 'selected' : '' %>>Festive Collection</option>
+                    <option value="New Arrivals" <%= product.category === 'New Arrivals' ? 'selected' : '' %>>New Arrivals</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="product-stock">Stock Quantity</label>
+                  <input type="number" id="product-stock" name="stock" min="0" value="<%= product.stock %>">
+                </div>
+              </div>
+
+              <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" name="featured" value="1" id="product-featured" <%= product.featured ? 'checked' : '' %>>
+                  <span class="checkmark"></span>
+                  Mark as Featured (shown on home page)
+                </label>
+              </div>
+            </div>
+
+            <div class="form-right">
+              <div class="form-group">
+                <label>Product Image</label>
+                <div class="image-upload-area" onclick="document.getElementById('product-image').click()">
+                  <input type="file" id="product-image" name="image" accept="image/*" onchange="previewImage(this)" hidden>
+                  <div class="upload-placeholder" id="upload-placeholder" style="<%= product.image ? 'display:none' : '' %>">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Click to change image</p>
+                    <span>JPG, PNG, WebP — Max 5MB</span>
+                  </div>
+                  <img id="image-preview" class="image-preview" 
+                       src="/uploads/<%= product.image %>" 
+                       style="<%= product.image ? '' : 'display:none' %>"
+                       onerror="this.style.display='none'; document.getElementById('upload-placeholder').style.display='flex';">
+                </div>
+                <p class="form-hint">Leave empty to keep current image</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <a href="/admin/dashboard" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary btn-lg" id="update-product-btn">
+              <i class="fas fa-save"></i> Update Product
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.querySelector('.admin-layout').classList.toggle('sidebar-collapsed');
+    }
+
+    function previewImage(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('image-preview').src = e.target.result;
+          document.getElementById('image-preview').style.display = 'block';
+          document.getElementById('upload-placeholder').style.display = 'none';
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+  </script>
+</body>
+</html>

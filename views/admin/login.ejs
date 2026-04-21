@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — Geetha Tex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="admin-body">
+  <div class="admin-login-container">
+    <div class="admin-login-card">
+      <div class="admin-login-header">
+        <img src="/images/logo.png" alt="Geetha Tex Logo" class="admin-login-logo">
+        <p>Admin Dashboard</p>
+      </div>
+      
+      <% if (error) { %>
+        <div class="alert alert-error">
+          <i class="fas fa-exclamation-circle"></i> <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/admin/login" method="POST" class="admin-login-form">
+        <div class="form-group">
+          <label for="admin-password"><i class="fas fa-lock"></i> Password</label>
+          <div class="password-input-wrap">
+            <input type="password" id="admin-password" name="password" required placeholder="Enter admin password" autofocus>
+            <button type="button" class="toggle-password" onclick="togglePassword()" id="toggle-pw">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="admin-login-btn">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+      </form>
+
+      <a href="/" class="admin-back-link"><i class="fas fa-arrow-left"></i> Back to Store</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('admin-password');
+      const icon = document.querySelector('#toggle-pw i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'fas fa-eye';
+      }
+    }
+  </script>
+</body>
+</html>
